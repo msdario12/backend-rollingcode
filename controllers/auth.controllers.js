@@ -1,7 +1,7 @@
 const { validationResult } = require('express-validator');
 
 const createUser = (req, res) => {
-	const { name, age } = req.body;
+	const { email, password, passwordConfirm, firstName, lastName } = req.body;
 
 	const errors = validationResult(req);
 
@@ -18,4 +18,6 @@ const createUser = (req, res) => {
 	res.sendStatus(200);
 };
 
-module.exports = createUser;
+const loginUser = (req, res) => {};
+
+module.exports = { createUser, loginUser };

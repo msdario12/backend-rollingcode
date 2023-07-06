@@ -1,9 +1,12 @@
 const express = require('express');
 const routerAuth = require('./routes/auth');
 const routerAdmin = require('./routes/admin');
+const { dbConnection } = require('./database/config');
 require('dotenv').config();
 // crear el servidor express
 const app = express();
+
+dbConnection();
 
 // directorio publico
 app.use(express.static('public'));

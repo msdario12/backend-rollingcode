@@ -16,6 +16,13 @@ routerAuth.post(
 	createUser
 );
 
-routerAuth.post('/login', loginUser);
+routerAuth.post(
+	'/login',
+	check('email', 'Email is not valid').not().isEmpty().isEmail().isString(),
+	check('password', 'Password is not valid').exists().isString().isLength({
+		min: 8,
+	}),
+	loginUser
+);
 
 module.exports = routerAuth;

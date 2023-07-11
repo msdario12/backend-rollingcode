@@ -9,7 +9,7 @@ const createUser = async (req, res) => {
 	const errors = validationResult(req);
 
 	if (!errors.isEmpty()) {
-		return res.json({
+		return res.status(400).json({
 			errors: errors.mapped(),
 		});
 	}
@@ -20,7 +20,9 @@ const createUser = async (req, res) => {
 
 		if (user) {
 			console.log(user);
-			return res.json({ msg: 'The email is already register in the site' });
+			return res
+				.status(400)
+				.json({ msg: 'The email is already register in the site' });
 		}
 
 		user = new usersModel(req.body);
@@ -32,10 +34,10 @@ const createUser = async (req, res) => {
 
 		await user.save();
 		console.log(user);
-		res.json({ msg: 'Usuario registrado' });
+		res.status(201).json({ msg: 'Usuario registrado' });
 	} catch (error) {
 		console.log(error);
-		res.json({
+		res.status(500).json({
 			msg: 'Contact with DB Admin',
 		});
 	}
@@ -57,18 +59,21 @@ const loginUser = async (req, res) => {
 		let user = await usersModel.findOne({ email });
 		console.log(user);
 		if (!user) {
-			return res.json({ msg: 'Email or password incorrect' });
+			return res.status(400).json({ msg: 'Email or password incorrect' });
 		}
 		// Email existe
 		const isPasswordMatch = await bcrypt.compare(password, user.password);
 		console.log(isPasswordMatch);
 		if (!isPasswordMatch) {
-			return res.json({ msg: 'Email or password incorrect' });
+			return res.status(400).json({ msg: 'Email or password incorrect' });
 		}
 		// Contraseña correcta
-		res.json({ msg: 'Login successful' });
+		res.status(200).json({ msg: 'Login successful' });
 	} catch (error) {
 		console.log(error);
+		res.status(500).json({
+			msg: 'Contact with DB Admin',
+		});
 	}
 };
 

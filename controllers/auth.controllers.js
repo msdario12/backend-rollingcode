@@ -1,6 +1,7 @@
 const { validationResult } = require('express-validator');
 const usersModel = require('../model/users-model');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 const createUser = async (req, res) => {
 	const { email, password, name } = req.body;
@@ -33,8 +34,17 @@ const createUser = async (req, res) => {
 		// Store hash in your password DB.
 
 		await user.save();
-		console.log(user);
-		res.status(201).json({ msg: 'Usuario registrado' });
+		// generar JWT
+		const payload = {
+			id: user._id,
+			name: user.name,
+			role: user.role,
+		};
+		console.log(payload);
+		const token = jwt.sign(payload, process.env.SECRET_JWT, {
+			expiresIn: '2h',
+		});
+		res.status(201).json({ msg: 'Usuario registrado', token });
 	} catch (error) {
 		console.log(error);
 		res.status(500).json({
@@ -67,8 +77,17 @@ const loginUser = async (req, res) => {
 		if (!isPasswordMatch) {
 			return res.status(400).json({ msg: 'Email or password incorrect' });
 		}
+		// generar jwt
+		const payload = {
+			id: user._id,
+			name: user.name,
+			role: user.role,
+		};
+		const token = jwt.sign(payload, process.env.SECRET_JWT, {
+			expiresIn: '20s',
+		});
 		// Contraseña correcta
-		res.status(200).json({ msg: 'Login successful' });
+		res.status(200).json({ msg: 'Login successful', token });
 	} catch (error) {
 		console.log(error);
 		res.status(500).json({
